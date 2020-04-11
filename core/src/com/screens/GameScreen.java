@@ -644,6 +644,13 @@ public class GameScreen implements Screen {
 			}
 		}
 
+		// ==============================================================
+		//					TO ADD for assessment 4
+		// ==============================================================
+		// Checks if truck has driven over a powerup square
+
+
+
 		// Check if firetruck is hit with a projectile
 		for (int i=0; i<this.projectiles.size(); i++) {
 			Projectile projectile = this.projectiles.get(i);
