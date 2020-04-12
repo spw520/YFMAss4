@@ -40,6 +40,7 @@ import com.entities.*;
 import com.Kroy;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
+import com.sprites.PowerupSprite;
 
 // Constants import
 import static com.misc.Constants.*;
@@ -78,6 +79,7 @@ public class GameScreen implements Screen {
 	private final ArrayList<MinigameSprite> minigameSprites;
 	private ArrayList<Projectile> projectilesToRemove;
 	private final ArrayList<Patrol> ETPatrols;
+	private final ArrayList<Patrol> powerUpList;
 	private final Firestation firestation;
 	private final ArrayList<Texture> waterFrames;
 	private final Texture projectileTexture;
@@ -290,6 +292,8 @@ public class GameScreen implements Screen {
 				createPatrol();
 			}
 		}, 7,10);
+
+		powerUpList = new ArrayList<>();
 
 		isInTutorial = true;
 
@@ -747,6 +751,15 @@ public class GameScreen implements Screen {
 		this.ETPatrols.add(new Patrol(this.patrolTextures, mapGraph));
 	}
 
+	/** ===============================================
+	 * 			New function for assessment 4
+	 * ================================================
+	 * Creates Patrol and adds it to the list of patrols
+	 */
+	private void spawnPowerup() {
+		this.powerUpList.add(new PowerupSprite(this.mapGraph, new Texture(),1));
+	}
+
 	/*
 	 *  =======================================================================
 	 *                          Added for Assessment 3
@@ -772,7 +785,8 @@ public class GameScreen implements Screen {
 	 */
 	/**
 	 * Adds junctions to the mapGraph. A junction is a place in the map where the
-	 * patrol has to make a decision about where to move to next.
+	 * patrol has to make a decision about where to move to next. As of assessment 4,
+	 * it is also a spot a powerup can spawn.
 	 */
 	private void populateMap(){
 		Junction one = new Junction(4987, 572, "bottom right corner");
