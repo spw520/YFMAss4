@@ -57,6 +57,10 @@ public class Firetruck extends MovementSprite {
     private boolean isBought;
 
     private boolean isAlive;
+    private int isShield;
+    private int isSword;
+    private int isRange;
+    private float range;
 
     private final Firestation fireStation;
 
@@ -87,6 +91,10 @@ public class Firetruck extends MovementSprite {
         this.isArrowVisible = false;
         this.carparkLayer = carparkLayer;
         this.isBought = isBought;
+        this.range = this.getType().getProperties()[4];
+        this.isShield = 0;
+        this.isSword = 0;
+        this.isRange = 0;
     }
 
     /**
@@ -157,8 +165,10 @@ public class Firetruck extends MovementSprite {
         hoseVector.nor();
 
         // Update the hose size and position. Angle it towards the mouse
-        float scale = this.isSpraying && this.hoseRange.getScaleX() < this.getType().getProperties()[4] ?
-                0.05f : !this.isSpraying && this.hoseRange.getScaleX() > 0 ? -0.05f : 0;
+        float scale =
+                this.isSpraying && this.hoseRange.getScaleX() < this.range ? 0.05f :
+                !this.isSpraying && this.hoseRange.getScaleX() > 0 ? -0.05f :
+                this.isSpraying && this.hoseRange.getScaleX() > this.range ? -0.05f : 0;
         this.hoseRange.setScale(this.hoseRange.getScaleX() + scale, this.hoseRange.getScaleY() + scale);
         this.hoseRange.setPosition(this.getCentreX(), this.getCentreY());
         this.hoseRange.setRotation(hoseVector.angle());
@@ -174,6 +184,31 @@ public class Firetruck extends MovementSprite {
         // Decrease timeout, used for keeping track of time between toggle presses
         if (this.toggleDelay > 0) this.toggleDelay -= 1;
 
+        if (this.isShield > 0 ) {
+            batch.draw(new Texture("PowerUps/shieldEffect.png"),getX()-10,getY(),75,75);
+            isShield--;
+        }
+
+        if (this.isSword > 0 ) {
+            batch.draw(new Texture("PowerUps/swordEffect.png"),getX()+70,getY(),75,75);
+            isSword--;
+        }
+
+        if (this.isRange > 0 ) {
+            this.range = 2.5f;
+            isRange--;
+            if (this.isRange == 0) { this.range = this.getType().getProperties()[4]; };
+        }
+    }
+
+    public boolean getShielded() {
+        if (isShield>0) {return true;}
+        else return false;
+    }
+
+    public boolean getSword() {
+        if (isSword>0) {return true;}
+        else return false;
     }
 
     /**
@@ -192,6 +227,18 @@ public class Firetruck extends MovementSprite {
                 }
             }
         }
+    }
+
+    public void shieldEffect() {
+        this.isShield=300;
+    }
+
+    public void swordEffect() {
+        this.isSword=400;
+    }
+
+    public void rangeEffect() {
+        this.isRange=400;
     }
 
     /**
@@ -471,7 +518,7 @@ public class Firetruck extends MovementSprite {
     }
 
     public float getRange() {
-        return this.getType().getProperties()[4];
+        return this.range;
     }
 
     public TruckType getType() {

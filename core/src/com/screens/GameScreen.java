@@ -34,6 +34,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 // Java util imports
 import java.util.ArrayList;
+import java.util.Random;
 
 // Class imports
 import com.entities.*;
@@ -79,11 +80,12 @@ public class GameScreen implements Screen {
 	private final ArrayList<MinigameSprite> minigameSprites;
 	private ArrayList<Projectile> projectilesToRemove;
 	private final ArrayList<Patrol> ETPatrols;
-	private final ArrayList<Patrol> powerUpList;
+	private final ArrayList<PowerupSprite> powerUpList;
 	private final Firestation firestation;
 	private final ArrayList<Texture> waterFrames;
 	private final Texture projectileTexture;
 	private ArrayList<Texture> patrolTextures;
+	private ArrayList<Texture> powerUpTextures;
 
 	// Objects for the patrol graph
 	final MapGraph mapGraph;
@@ -104,6 +106,7 @@ public class GameScreen implements Screen {
 	private final Timer popupTimer;
 	private final Timer firestationTimer;
 	private final Timer ETPatrolsTimer;
+	private final Timer PowerUpTimer;
 
 	private final CarparkScreen carparkScreen;
 	private final GameInputHandler gameInputHandler;
@@ -294,6 +297,14 @@ public class GameScreen implements Screen {
 		}, 7,10);
 
 		powerUpList = new ArrayList<>();
+		buildPowerupTextures();
+		PowerUpTimer = new Timer();
+		PowerUpTimer.scheduleTask(new Task() {
+			@Override
+			public void run() {
+				spawnPowerup();
+			}
+		}, 10,10);
 
 		isInTutorial = true;
 
@@ -398,6 +409,12 @@ public class GameScreen implements Screen {
 		for (Patrol patrol : this.ETPatrols) {
 			patrol.update(this.game.batch);
 			if (DEBUG_ENABLED) patrol.drawDebug(shapeRenderer);
+		}
+
+		// Updates and render patrols
+		for (PowerupSprite pw : this.powerUpList) {
+			pw.update(this.game.batch);
+			if (DEBUG_ENABLED) pw.drawDebug(shapeRenderer);
 		}
 
 		// Render mini game sprites
@@ -611,6 +628,17 @@ public class GameScreen implements Screen {
 		}
 
 		// ==============================================================
+		//					Added for assessment 4
+		// ==============================================================
+		// Checks to see if a powerup has been picked up and removes it if it has
+		for (int i=0; i<this.powerUpList.size(); i++) {
+			PowerupSprite pw = this.powerUpList.get(i);
+			if (pw.getPicked()) {
+				this.powerUpList.remove(pw);
+			}
+		}
+
+		// ==============================================================
 		//					Added for assessment 3
 		// ==============================================================
 		// Checks if a patrol has attacked a fire truck and vice versa, also if patrol can attack fire station
@@ -629,6 +657,10 @@ public class GameScreen implements Screen {
 				projectile.calculateTrajectory(firestation);
 				SFX.sfx_projectile.play();
 				this.projectiles.add(projectile);
+			}
+			//added for assessment 4
+			if(firetruck.getSword() && Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(),patrol.getDamageHitBox())) {
+				patrol.getHealthBar().subtractResourceAmount(25);
 			}
 		}
 		// ==============================================================
@@ -649,22 +681,28 @@ public class GameScreen implements Screen {
 		}
 
 		// ==============================================================
-		//					TO ADD for assessment 4
+		//					Added for assessment 4
 		// ==============================================================
 		// Checks if truck has driven over a powerup square
-
-
+		for (int i=0; i<this.powerUpList.size(); i++) {
+			PowerupSprite pw = powerUpList.get(i);
+			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), pw.getHitBox())) {
+				pw.pickUp(getActiveTruck());
+			}
+		}
 
 		// Check if firetruck is hit with a projectile
 		for (int i=0; i<this.projectiles.size(); i++) {
 			Projectile projectile = this.projectiles.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getDamageHitBox(), projectile.getDamageHitBox())) {
-				SFX.sfx_truck_damage.play();
-				firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
-				if (this.score >= 10) this.score -= 10;
+				if(!firetruck.getShielded()) {
+					SFX.sfx_truck_damage.play();
+					firetruck.getHealthBar().subtractResourceAmount(projectile.getDamage());
+					if (this.score >= 10) this.score -= 10;
+				}
 				this.projectiles.remove(projectile);
 			} else if (!firestation.isDestroyed() && firestation.isVulnerable() && Intersector.overlapConvexPolygons(firestation.getDamageHitBox(), projectile.getDamageHitBox())) {
-				firestation.getHealthBar().subtractResourceAmount(projectile.getDamage());
+				if(!firetruck.getShielded()){firestation.getHealthBar().subtractResourceAmount(projectile.getDamage());}
 				this.projectiles.remove(projectile);
 			}
 		}
@@ -754,10 +792,16 @@ public class GameScreen implements Screen {
 	/** ===============================================
 	 * 			New function for assessment 4
 	 * ================================================
-	 * Creates Patrol and adds it to the list of patrols
+	 * Creates a powerup randomly determined
 	 */
-	private void spawnPowerup() {
-		this.powerUpList.add(new PowerupSprite(this.mapGraph, new Texture(),1));
+	public void spawnPowerup() {
+		if (this.powerUpList.size() < POWERUP_MAX) {
+			Random r = new Random();
+			int id = r.nextInt(5) + 1;
+
+			PowerupSprite pw = new PowerupSprite(this.mapGraph, powerUpTextures.get(id - 1), id);
+			this.powerUpList.add(pw);
+		}
 	}
 
 	/*
@@ -776,6 +820,24 @@ public class GameScreen implements Screen {
 			patrolTextures.add(texture);
 		}
 		this.patrolTextures = patrolTextures;
+	}
+
+	/*
+	 *  =======================================================================
+	 *                          Added for Assessment 4
+	 *  =======================================================================
+	 */
+	/**
+	 * Builds an array of textures that is used to render patrols
+	 */
+	private void buildPowerupTextures() {
+		ArrayList<Texture> powerupTextures = new ArrayList<Texture>();
+		powerupTextures.add(new Texture("PowerUps/1_waterRefill.png"));
+		powerupTextures.add(new Texture("PowerUps/2_healthRefill.png"));
+		powerupTextures.add(new Texture("PowerUps/3_tempShield.png"));
+		powerupTextures.add(new Texture("PowerUps/4_tempSword.png"));
+		powerupTextures.add(new Texture("PowerUps/5_burstShots.png"));
+		this.powerUpTextures = powerupTextures;
 	}
 
 	/*
@@ -1186,6 +1248,7 @@ public class GameScreen implements Screen {
 			firestation.getActiveFireTruck().respawn();
 			firestation.getActiveFireTruck().setHose(false);
 			this.ETPatrols.clear();
+			this.powerUpList.clear();
 			this.camera.zoom = 1.3f;
 			this.zoomTarget = 1.2f;
 			popupMessages.addLast("{FADE=0;0.75;1}Pro Tip: Killing your enemies makes them less likely to kill you.");
