@@ -16,6 +16,7 @@ import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,6 +26,8 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.utils.Timer.Task;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
 // Tiled map imports from LibGDX
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -1299,4 +1302,30 @@ public class GameScreen implements Screen {
 
 	public Firetruck getActiveTruck() {return this.firestation.getActiveFireTruck();}
 
+
+	public void saveGame(String path){
+		 Json json = new Json();
+		 json.toJson(this, new FileHandle(path));
+	}
+
+	
+	public void write(Json json){
+		json.writeValue("firestation", firestation);
+		json.writeValue("ETFortresses", ETFortresses);
+		json.writeValue("ETPatrols", ETPatrols);
+		json.writeValue("ETPatrolsTimer", ETPatrolsTimer);
+		json.writeValue("vignetteSepiaShader", vignetteSepiaShader);
+		json.writeValue("map", map);
+		json.writeValue("score", score);
+		json.writeValue("time", time);
+		json.writeValue("projectiles", projectiles);
+		json.writeValue("popupTimer", popupTimer);
+		json.writeValue("firestationTimer", firestationTimer);
+		json.writeValue("PowerUpTimer", PowerUpTimer);
+	}
+
+	
+	public void read(Json json, JsonValue jsonData) {
+		
+	}
 }

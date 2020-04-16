@@ -5,6 +5,7 @@ package com.screens;
    ===============================================================*/
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.misc.SFX;
@@ -89,6 +91,9 @@ public class PauseScreen implements Screen {
         label.setFontScale(2);
         TextButton resumeButton = new TextButton("Resume game", skin);
         TextButton howToPlayButton = new TextButton("How to Play", skin);
+        TextButton saveGameButton1 = new TextButton("Save Game 1", skin);
+        TextButton saveGameButton2 = new TextButton("Save Game 2", skin);
+        TextButton saveGameButton3 = new TextButton("Save Game 3", skin);
         TextButton quitButton = new TextButton("Return to Main Menu", skin);
         Label scoreLabel = new Label("Score: " + gameScreen.getScore(), new Label.LabelStyle(game.coolFont, Color.WHITE));
         scoreLabel.setAlignment(Align.right);
@@ -100,6 +105,12 @@ public class PauseScreen implements Screen {
         table.add(resumeButton).width(200).height(40).padBottom(20);
         table.row();
         table.add(howToPlayButton).width(200).height(40).padBottom(20);
+        table.row();
+        table.add(saveGameButton1).width(200).height(40).padBottom(20);
+        table.row();
+        table.add(saveGameButton2).width(200).height(40).padBottom(20);
+        table.row();
+        table.add(saveGameButton3).width(200).height(40).padBottom(20);
         table.row();
         table.add(quitButton).width(200).height(40).padBottom(20);
         table.row();
@@ -122,6 +133,13 @@ public class PauseScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new HowToPlayScreen(game,  getThis()));
+            }
+        });
+
+        saveGameButton1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                gameScreen.saveGame("./saves/savegame1.json");
             }
         });
 
