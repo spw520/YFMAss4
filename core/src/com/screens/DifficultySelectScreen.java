@@ -69,7 +69,7 @@ public class DifficultySelectScreen implements Screen {
     }
 
     /**
-     * Render function to display all elements in the main menu.
+     * Render function to display all elements in the menu.
      *
      * @param delta The delta time of the game, updated every second rather than frame.
      */
@@ -187,9 +187,9 @@ public class DifficultySelectScreen implements Screen {
     }
 
     /**
-     * Used to pass the main menu screen into the controls screen
+     * Used to pass the menu screen into the controls screen
      *
-     * @return  main menu screen
+     * @return  screen
      */
     public Screen getThis() {
         return this;

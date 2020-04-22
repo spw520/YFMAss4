@@ -4,17 +4,13 @@ package com.sprites;
                        New class added for assessment 4
    ===============================================================*/
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Polygon;
 import com.entities.Firetruck;
 import com.misc.Constants;
 import com.pathFinding.Junction;
 import com.pathFinding.MapGraph;
-
-import static com.misc.Constants.FIRETRUCK_REPAIR_SPEED;
 
 /**
  * This sprite can be located around the map and when
@@ -34,9 +30,14 @@ public class PowerupSprite extends SimpleSprite {
     /**
      * Constructor for powerup sprite
      *
-     *
-     *
-     * @param
+     * @param mapGraph      The map, used to determine where the powerup will spawn
+     * @param tex           The texture of the powerup
+     * @param t             The integer that determines the type of the powerup. In this case:
+     *                      1 - water refill
+     *                      2 - health refill
+     *                      3 - shield effect
+     *                      4 - sword effect
+     *                      5 - range increase
      */
     public PowerupSprite(MapGraph mapGraph, Texture tex, int t) {
         super(tex);
@@ -65,7 +66,6 @@ public class PowerupSprite extends SimpleSprite {
 
     public float getX() { return x-(width/2);}
     public float getY() { return y-(height/2);}
-    public int getType() { return type; }
     public boolean getPicked() { return picked; }
 
     public void pickUp(Firetruck activeTruck) {

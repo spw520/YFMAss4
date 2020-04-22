@@ -31,7 +31,6 @@ public class ETFortress extends SimpleSprite {
     private boolean flooded;
     private final FortressType type;
     private final GameScreen gameScreen;
-    private int difficulty;
     private float difScale;
 
     /**
@@ -45,6 +44,7 @@ public class ETFortress extends SimpleSprite {
      * @param xPos              The x-coordinate for the ETFortress.
      * @param yPos              The y-coordinate for the ETFortress.
      * @param type              {@link FortressType} given to fortress
+     * @param difficulty        The difficulty level of the game, used to determine the difficulty scale
      * @param gameScreen        GameScreen to send popup messages to
      */
     public ETFortress(Texture texture, Texture destroyedTexture, float scaleX, float scaleY, float xPos, float yPos, FortressType type, int difficulty, GameScreen gameScreen) {
@@ -53,8 +53,8 @@ public class ETFortress extends SimpleSprite {
         this.destroyed = destroyedTexture;
         this.flooded = false;
 
-        this.difficulty=difficulty;
-        if (difficulty==1) this.difScale=0.75f;
+        //the difficulty scale changes the base's range, health and healing by that factor
+        if (difficulty==1) this.difScale=0.8f;
         if (difficulty==2) this.difScale=1;
         if (difficulty==3) this.difScale=1.5f;
 
