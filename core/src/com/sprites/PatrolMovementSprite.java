@@ -46,12 +46,14 @@ public class PatrolMovementSprite extends SimpleSprite {
     // from its start position to it's goal position
     final Queue<Junction> pathQueue;
 
+    private float difScale;
+
     /** Constructor for PatrolMovementSprite
      *
      * @param spriteTexture  The texture for the PatrolMovementSprite
      * @param mapGraph       mapGraph that contains all the junctions in the map
      */
-    public PatrolMovementSprite(Texture spriteTexture, MapGraph mapGraph){
+    public PatrolMovementSprite(Texture spriteTexture, MapGraph mapGraph, int difficulty){
         super(spriteTexture);
 
         this.mapGraph = mapGraph;
@@ -64,9 +66,13 @@ public class PatrolMovementSprite extends SimpleSprite {
         this.x = start.getX();
         this.y = start.getY();
 
+        if(difficulty==1) this.difScale = 0.75f;
+        if(difficulty==2) this.difScale = 1f;
+        if(difficulty==3) this.difScale = 1.5f;
+
         this.deltaX = 0f;
         this.deltaY = 0f;
-        this.speed = 2.0f;
+        this.speed = 2.0f * difScale;
 
         this.previousJunction = start;
 

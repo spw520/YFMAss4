@@ -111,15 +111,19 @@ public class GameScreen implements Screen {
 	private final CarparkScreen carparkScreen;
 	private final GameInputHandler gameInputHandler;
 
+	//added for assessment 4: 1 is easy, 2 is medium, 3 is difficult
+	private int difficulty;
+
 	/**
 	 * The constructor for the main game screen. All main game logic is
 	 * contained.
 	 *
 	 * @param game The game object.
 	 */
-	public GameScreen(final Kroy game) {
+	public GameScreen(final Kroy game, int difficulty) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
+		this.difficulty=difficulty;
 
 		// ---- 1) Create new instance for all the objects needed for the game ---- //
 
@@ -156,6 +160,7 @@ public class GameScreen implements Screen {
 		this.game.batch.setProjectionMatrix(this.camera.combined);
 
 		generateTutorial();
+		isInTutorial = true;
 
 		this.stage = new Stage(new ScreenViewport());
 		this.stage.setDebugAll(DEBUG_ENABLED);
@@ -253,14 +258,15 @@ public class GameScreen implements Screen {
 		constructFireTruck(false, TruckType.YELLOW);
 		constructFireTruck(false, TruckType.GREEN);
 
+
 		// Initialise ETFortresses array and add ETFortresses to it
 		this.ETFortresses = new ArrayList<ETFortress>();
-		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, this));
-		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, this));
-		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, this));
-		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, this));
-		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, this));
-		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, this));
+		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, difficulty, this));
+		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, difficulty, this));
+		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, difficulty, this));
+		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, difficulty, this));
+		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, difficulty, this));
+		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, difficulty, this));
 
 		// Create array to collect entities that are no longer used
 		this.projectilesToRemove = new ArrayList<Projectile>();
@@ -306,8 +312,7 @@ public class GameScreen implements Screen {
 			}
 		}, 10,10);
 
-		isInTutorial = true;
-
+		if(difficulty!=1) finishTutorial();
 	}
 
 	/**
@@ -786,7 +791,7 @@ public class GameScreen implements Screen {
 	 * Creates Patrol and adds it to the list of patrols
 	 */
 	private void spawnPatrol() {
-		this.ETPatrols.add(new Patrol(this.patrolTextures, mapGraph));
+		this.ETPatrols.add(new Patrol(this.patrolTextures, mapGraph, difficulty));
 	}
 
 	/** ===============================================

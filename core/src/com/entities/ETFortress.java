@@ -31,6 +31,8 @@ public class ETFortress extends SimpleSprite {
     private boolean flooded;
     private final FortressType type;
     private final GameScreen gameScreen;
+    private int difficulty;
+    private float difScale;
 
     /**
      * Overloaded constructor containing all possible parameters.
@@ -45,16 +47,22 @@ public class ETFortress extends SimpleSprite {
      * @param type              {@link FortressType} given to fortress
      * @param gameScreen        GameScreen to send popup messages to
      */
-    public ETFortress(Texture texture, Texture destroyedTexture, float scaleX, float scaleY, float xPos, float yPos, FortressType type, GameScreen gameScreen) {
+    public ETFortress(Texture texture, Texture destroyedTexture, float scaleX, float scaleY, float xPos, float yPos, FortressType type, int difficulty, GameScreen gameScreen) {
         super(texture);
         this.gameScreen = gameScreen;
         this.destroyed = destroyedTexture;
         this.flooded = false;
+
+        this.difficulty=difficulty;
+        if (difficulty==1) this.difScale=0.75f;
+        if (difficulty==2) this.difScale=1;
+        if (difficulty==3) this.difScale=1.5f;
+
         this.type = type;
         this.setScale(scaleX, scaleY);
         this.setPosition(xPos, yPos);
         this.setSize(ETFORTRESS_WIDTH * this.getScaleX(), ETFORTRESS_HEIGHT * this.getScaleY());
-        this.getHealthBar().setMaxResource(type.getHealth());
+        this.getHealthBar().setMaxResource((int) (type.getHealth()*difScale));
         super.resetRotation(90);
     }
 
@@ -73,7 +81,7 @@ public class ETFortress extends SimpleSprite {
                     " fortresses", 1, 7);
         } else if (!flooded && this.getInternalTime() % 150 == 0 && this.getHealthBar().getCurrentAmount() != this.getHealthBar().getMaxAmount()) {
             // Heal ETFortresses every second if not taking damage
-			this.getHealthBar().addResourceAmount(type.getHealing());
+			this.getHealthBar().addResourceAmount((int) (type.getHealing()*difScale));
         }
     }
 
@@ -99,7 +107,7 @@ public class ETFortress extends SimpleSprite {
      *                  <code>false</code> otherwise
      */
     public boolean isInRadius(Vector2 position) {
-        return this.getCentre().dst(position) <= type.getRange();
+        return this.getCentre().dst(position) <= type.getRange()*difScale;
     }
 
     /**
@@ -111,7 +119,7 @@ public class ETFortress extends SimpleSprite {
     @Override
     public void drawDebug(ShapeRenderer renderer) {
         super.drawDebug(renderer);
-        renderer.circle(this.getCentreX(), this.getCentreY(), this.type.getRange());
+        renderer.circle(this.getCentreX(), this.getCentreY(), this.type.getRange()*difScale);
     }
 
     public boolean isFlooded() {

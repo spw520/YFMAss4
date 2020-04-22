@@ -36,6 +36,8 @@ public class Patrol extends PatrolMovementSprite {
 
     private final int detectionRange;
 
+    private float difScale;
+
     /** The constructor for Patrol
      *
      * @param textureSlices List of textures that are layered on top of each other to
@@ -43,12 +45,17 @@ public class Patrol extends PatrolMovementSprite {
      * @param mapGraph      Graph of junctions - used by PatrolMovementSprite to
      *                      determine the patrol's movement
      */
-    public Patrol(ArrayList<Texture> textureSlices, MapGraph mapGraph){
-        super(textureSlices.get(textureSlices.size() - 1), mapGraph);
+    public Patrol(ArrayList<Texture> textureSlices, MapGraph mapGraph, int difficulty){
+        super(textureSlices.get(textureSlices.size() - 1), mapGraph, difficulty);
         this.getHealthBar().setMaxResource(25);
         this.textureSlices = textureSlices;
         this.isDead = false;
-        this.detectionRange = Constants.TILE_DIMS * 5;
+
+        if(difficulty==1) this.difScale = 0.75f;
+        if(difficulty==2) this.difScale = 1f;
+        if(difficulty==3) this.difScale = 1.5f;
+
+        this.detectionRange = (int) (Constants.TILE_DIMS * 5 * difScale);
     }
 
     /** Called from gameScreen, first checks whether the patrol has
