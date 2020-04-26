@@ -109,12 +109,15 @@ public class GameScreen implements Screen {
 
 	// timers to manage timed events
 	private final Timer popupTimer;
-	private final Timer firestationTimer;
+	private final Timer fireStationTimer;
 	private final Timer ETPatrolsTimer;
 	private final Timer PowerUpTimer;
 
 	private final CarparkScreen carparkScreen;
 	private final GameInputHandler gameInputHandler;
+
+	//added for assessment 4: 1 is easy, 2 is medium, 3 is difficult
+	private int difficulty;
 
 	/**
 	 * The constructor for the main game screen. All main game logic is
@@ -122,9 +125,10 @@ public class GameScreen implements Screen {
 	 *
 	 * @param game The game object.
 	 */
-	public GameScreen(final Kroy game) {
+	public GameScreen(final Kroy game, int difficulty) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
+		this.difficulty=difficulty;
 
 		// ---- 1) Create new instance for all the objects needed for the game ---- //
 
@@ -147,8 +151,9 @@ public class GameScreen implements Screen {
 		// Create an array to store all projectiles in motion
 		this.projectiles = new ArrayList<>();
 
-		// Decrease time every second, starting at 3 minutes
-		this.time = TIME_STATION_VULNERABLE;
+		// Decrease time every second, starting at 3 minutes or twice as long on easy difficulty
+		if (difficulty==1) this.time = TIME_STATION_VULNERABLE*2;
+		else this.time = TIME_STATION_VULNERABLE;
 
 		gameInputHandler = new GameInputHandler(this);
 
@@ -161,6 +166,7 @@ public class GameScreen implements Screen {
 		this.game.batch.setProjectionMatrix(this.camera.combined);
 
 		generateTutorial();
+		isInTutorial = true;
 
 		this.stage = new Stage(new ScreenViewport());
 		this.stage.setDebugAll(DEBUG_ENABLED);
@@ -234,7 +240,7 @@ public class GameScreen implements Screen {
 		this.projectileTexture = new Texture("alienProjectile.png");
 
 		// Create arrays of textures for animations
-		waterFrames = new ArrayList<Texture>();
+		waterFrames = new ArrayList<>();
 
 		// Create patrol texture
 		buildPatrolTextures();
@@ -246,7 +252,7 @@ public class GameScreen implements Screen {
 
 		// ---- 4) Create entities that will be around for entire game duration - //
 
-		// Create a new firestation
+		// Create a new fire station
 		this.firestation = new Firestation(firestationTexture, firestationDestroyedTexture, 77.5f * TILE_DIMS, 35.5f * TILE_DIMS, this);
 		this.carparkScreen = new CarparkScreen(this.game, this, this.firestation);
 
@@ -258,30 +264,31 @@ public class GameScreen implements Screen {
 		constructFireTruck(false, TruckType.YELLOW);
 		constructFireTruck(false, TruckType.GREEN);
 
+
 		// Initialise ETFortresses array and add ETFortresses to it
-		this.ETFortresses = new ArrayList<ETFortress>();
-		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, this));
-		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, this));
-		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, this));
-		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, this));
-		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, this));
-		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, this));
+		this.ETFortresses = new ArrayList<>();
+		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, difficulty, this));
+		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, difficulty, this));
+		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, difficulty, this));
+		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, difficulty, this));
+		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, difficulty, this));
+		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, difficulty, this));
 
 		// Create array to collect entities that are no longer used
-		this.projectilesToRemove = new ArrayList<Projectile>();
+		this.projectilesToRemove = new ArrayList<>();
 
 		this.junctionsInMap = new ArrayList<>();
 		mapGraph = new MapGraph();
 		populateMap();
 
-		firestationTimer = new Timer();
-		firestationTimer.scheduleTask(new Task() {
+		fireStationTimer = new Timer();
+		fireStationTimer.scheduleTask(new Task() {
 			@Override
 			public void run() {
 				decreaseTime();
 			}
 		}, 1, 1);
-		firestationTimer.stop();
+		fireStationTimer.stop();
 
 		popupTimer = new Timer();
 		popupTimer.scheduleTask(new Task() {
@@ -311,8 +318,7 @@ public class GameScreen implements Screen {
 			}
 		}, 10,10);
 
-		isInTutorial = true;
-
+		if(difficulty!=1) finishTutorial();
 	}
 
 	/**
@@ -324,7 +330,7 @@ public class GameScreen implements Screen {
 		this.camera.setToOrtho(false);
 		this.camera.position.set(this.firestation.getActiveFireTruck().getCentreX(), this.firestation.getActiveFireTruck().getCentreY(), 0);
 		// Create array to collect entities that are no longer used
-		this.projectilesToRemove = new ArrayList<Projectile>();
+		this.projectilesToRemove = new ArrayList<>();
 		Gdx.input.setInputProcessor(gameInputHandler);
 	}
 
@@ -492,7 +498,7 @@ public class GameScreen implements Screen {
 	 */
 	@Override
 	public void pause() {
-		if (!isInTutorial) firestationTimer.stop();
+		if (!isInTutorial) fireStationTimer.stop();
 		popupTimer.stop();
 		ETPatrolsTimer.stop();
 		game.setScreen(new PauseScreen(game, this));
@@ -506,7 +512,7 @@ public class GameScreen implements Screen {
 	 */
 	@Override
 	public void resume() {
-		if (!isInTutorial) firestationTimer.start();
+		if (!isInTutorial) fireStationTimer.start();
 		popupTimer.start();
 		ETPatrolsTimer.start();
 		this.camera.position.set(this.firestation.getActiveFireTruck().getCentre(), 0);
@@ -675,7 +681,7 @@ public class GameScreen implements Screen {
 		for (int i=0; i<this.minigameSprites.size(); i++) {
 			MinigameSprite minigameSprite = this.minigameSprites.get(i);
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), minigameSprite.getHitBox())) {
-				if (!isInTutorial) firestationTimer.stop();
+				if (!isInTutorial) fireStationTimer.stop();
 				popupTimer.stop();
 				ETPatrolsTimer.stop();
 				this.minigameSprites.remove(minigameSprite);
@@ -689,8 +695,7 @@ public class GameScreen implements Screen {
 		//					Added for assessment 4
 		// ==============================================================
 		// Checks if truck has driven over a powerup square
-		for (int i=0; i<this.powerUpList.size(); i++) {
-			PowerupSprite pw = powerUpList.get(i);
+		for (PowerupSprite pw : this.powerUpList) {
 			if (Intersector.overlapConvexPolygons(firetruck.getMovementHitBox(), pw.getHitBox())) {
 				pw.pickUp(getActiveTruck());
 			}
@@ -770,7 +775,7 @@ public class GameScreen implements Screen {
 	 * @return				array of textures
 	 */
 	private ArrayList<Texture> buildFiretuckTextures(String colourString) {
-		ArrayList<Texture> truckTextures = new ArrayList<Texture>();
+		ArrayList<Texture> truckTextures = new ArrayList<>();
 		for (int i = 20; i > 0; i--) {
 			if (i == 6) { // Texture 6 contains identical slices except the lights are different
 				Texture texture = new Texture("FireTrucks/" + colourString + "/Firetruck(6) A.png");
@@ -791,7 +796,7 @@ public class GameScreen implements Screen {
 	 * Creates Patrol and adds it to the list of patrols
 	 */
 	private void spawnPatrol() {
-		this.ETPatrols.add(new Patrol(this.patrolTextures, mapGraph));
+		this.ETPatrols.add(new Patrol(this.patrolTextures, mapGraph, difficulty));
 	}
 
 	/** ===============================================
@@ -818,7 +823,7 @@ public class GameScreen implements Screen {
 	 * Builds an array of textures that is used to render patrols
 	 */
 	private void buildPatrolTextures() {
-		ArrayList<Texture> patrolTextures = new ArrayList<Texture>();
+		ArrayList<Texture> patrolTextures = new ArrayList<>();
 		for (int i = 99; i >= 0; i--) {
 			String numberFormat = String.format("%03d", i);
 			Texture texture = new Texture("AlienSlices/tile" + numberFormat + ".png");
@@ -836,7 +841,7 @@ public class GameScreen implements Screen {
 	 * Builds an array of textures that is used to render patrols
 	 */
 	private void buildPowerupTextures() {
-		ArrayList<Texture> powerupTextures = new ArrayList<Texture>();
+		ArrayList<Texture> powerupTextures = new ArrayList<>();
 		powerupTextures.add(new Texture("PowerUps/1_waterRefill.png"));
 		powerupTextures.add(new Texture("PowerUps/2_healthRefill.png"));
 		powerupTextures.add(new Texture("PowerUps/3_tempShield.png"));
@@ -1247,7 +1252,7 @@ public class GameScreen implements Screen {
 			isInTutorial = false;
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
-			firestationTimer.start();
+			fireStationTimer.start();
 			firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
 			firestation.getActiveFireTruck().setRespawnLocation(0);
 			firestation.getActiveFireTruck().respawn();

@@ -40,13 +40,16 @@ public class StoryScreen implements Screen {
     private final Skin skin;
     private final Viewport viewport;
 
+    private int difficulty;
+
     /**
      * The constructor for the story screen
      *
      * @param game  game object for screen changes
      */
-    public StoryScreen(Kroy game) {
+    public StoryScreen(Kroy game, int difficulty) {
         this.game = game;
+        this.difficulty=difficulty;
 
         // imports common skin from game
         skin = game.getSkin();
@@ -118,7 +121,7 @@ public class StoryScreen implements Screen {
         stage.addActor(bcgstack);
 
         // creates game screen here to allow for less load time later
-        gameScreen = new GameScreen(game);
+        gameScreen = new GameScreen(game,difficulty);
     }
 
     /**

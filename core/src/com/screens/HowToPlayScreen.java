@@ -95,6 +95,9 @@ public class HowToPlayScreen implements Screen {
         String minigameText = "Enter a minigame by driving over one of the four icons on the map \n" +
                 "Entrances can only be used once. Once you have used one, that icon will disappear \n" +
                 "Click the red, blue, and green ETs that appear to earn as many points as you can in " + MINIGAME_DURATION + " seconds";
+        String powerupText = "There are also five different types of powerups that spawn across the map \n" +
+                "Pick them up for a temporary boost. They have the following effects:";
+        String powerupTextDesc = "Refill Water       Refill health    Temporary shield    Destroy patrols     Increased range";
 
 
         // Create main table to arrange actors
@@ -111,6 +114,8 @@ public class HowToPlayScreen implements Screen {
         firestationImages.center();
         Table minigameImages = new Table();
         minigameImages.center();
+        Table powerupImages = new Table();
+        powerupImages.center();
 
         // Create actors
         // Heading
@@ -143,6 +148,17 @@ public class HowToPlayScreen implements Screen {
         Image blueAlienImage = new Image(new Texture(Gdx.files.internal("Minigame/alien_1.png")));
         Image greenAlienImage = new Image(new Texture(Gdx.files.internal("Minigame/alien_2.png")));
 
+        // Powerups info
+        Label powerupHeading = new Label("Powerups", new Label.LabelStyle(game.coolFont, Color.WHITE));
+        Label powerupBody = new Label(powerupText,skin);
+        Image power1Image = new Image(new Texture(Gdx.files.internal("PowerUps/1_waterRefill.png")));
+        Image power2Image = new Image(new Texture(Gdx.files.internal("PowerUps/2_healthRefill.png")));
+        Image power3Image = new Image(new Texture(Gdx.files.internal("PowerUps/3_tempShield.png")));
+        Image power4Image = new Image(new Texture(Gdx.files.internal("PowerUps/4_tempSword.png")));
+        Image power5Image = new Image(new Texture(Gdx.files.internal("PowerUps/5_burstShots.png")));
+        Label powerupDesc = new Label(powerupTextDesc,skin);
+
+
         // Return button
         TextButton returnButton = new TextButton("Return", skin);
 
@@ -157,6 +173,11 @@ public class HowToPlayScreen implements Screen {
         minigameImages.add(redAlienImage).size(100,100).padRight(20);
         minigameImages.add(blueAlienImage).size(100,100).padRight(20);
         minigameImages.add(greenAlienImage).size(100,100);
+        powerupImages.add(power1Image).size(100,100).padRight(20);
+        powerupImages.add(power2Image).size(100,100).padRight(20);
+        powerupImages.add(power3Image).size(100,100).padRight(20);
+        powerupImages.add(power4Image).size(100,100).padRight(20);
+        powerupImages.add(power5Image).size(100,100).padRight(20);
 
         // Adding information to main table
         table.add(heading).padBottom(40).colspan(2);
@@ -178,6 +199,12 @@ public class HowToPlayScreen implements Screen {
         table.row();
         table.add(firestationImages).padRight(80).padBottom(40);
         table.add(minigameImages).padRight(40).padBottom(40);
+        table.row();
+        table.add(powerupHeading).padRight(80).padBottom(10);
+        table.add(powerupDesc).padRight(40).padBottom(10);
+        table.row();
+        table.add(powerupBody).padRight(80).padBottom(10);
+        table.add(powerupImages).padRight(40).padBottom(30);
         table.row();
         table.add(returnButton).width(200).height(40).padBottom(20).colspan(2);
 
