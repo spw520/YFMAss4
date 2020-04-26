@@ -1,4 +1,5 @@
 package com.screens;
+
 //
 // LibGDX imports
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -35,6 +36,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import java.io.StringWriter;
 // Java util imports
 import java.util.ArrayList;
 import java.util.Random;
@@ -1303,27 +1305,33 @@ public class GameScreen implements Screen {
 	public Firetruck getActiveTruck() {return this.firestation.getActiveFireTruck();}
 
 
-	public void saveGame(String path){
-		 Json json = new Json();
-		 json.toJson(this, new FileHandle(path));
+	public void saveGame(GameScreen gameScreen, String path){
+		 //Json json = new Json();
+		 //write(json);
+		 //json.toJson(json, new FileHandle(path));
+
+		FileHandle file = Gdx.files.local(path);
+		Json json = new Json(JsonWriter.OutputType.json);
+		JsonWriter writer = new JsonWriter(new StringWriter());
+		json.setWriter(writer);
+		write(json);
 	}
 
 	
 	public void write(Json json){
-		json.writeValue("firestation", firestation);
+		/*json.writeValue("firestation", firestation);
 		json.writeValue("ETFortresses", ETFortresses);
 		json.writeValue("ETPatrols", ETPatrols);
 		json.writeValue("ETPatrolsTimer", ETPatrolsTimer);
-		json.writeValue("vignetteSepiaShader", vignetteSepiaShader);
-		json.writeValue("map", map);
 		json.writeValue("score", score);
 		json.writeValue("time", time);
 		json.writeValue("projectiles", projectiles);
-		json.writeValue("popupTimer", popupTimer);
 		json.writeValue("firestationTimer", firestationTimer);
-		json.writeValue("PowerUpTimer", PowerUpTimer);
+		json.writeValue("PowerUpTimer", PowerUpTimer); */
+		json.writeObjectStart();
+		json.writeFields(firestation);
+		json.writeObjectEnd();
 	}
-
 	
 	public void read(Json json, JsonValue jsonData) {
 		

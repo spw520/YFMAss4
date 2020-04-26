@@ -139,7 +139,8 @@ public class PauseScreen implements Screen {
         saveGameButton1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y){
-                gameScreen.saveGame("./saves/savegame1.json");
+                
+                gameScreen.saveGame(gameScreen, "./saves/savegame1.json");
             }
         });
 
