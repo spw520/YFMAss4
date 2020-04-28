@@ -21,6 +21,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.misc.SFX;
 import com.Kroy;
 
+
+import com.Saves.SaveManager;
+
 import static com.misc.Constants.DEBUG_ENABLED;
 
 /**
@@ -139,10 +142,13 @@ public class PauseScreen implements Screen {
         saveGameButton1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y){
-                
-                gameScreen.saveGame(gameScreen, "./saves/savegame1.json");
+                SaveManager.saveGame(gameScreen, Gdx.files.local("saves/save1.json"));
+                //game.setScreen(new MenuScreen(game));
+                dispose();
             }
         });
+
+        
 
         quitButton.addListener(new ClickListener() {
             @Override

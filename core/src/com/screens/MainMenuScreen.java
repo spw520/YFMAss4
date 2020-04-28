@@ -118,6 +118,7 @@ public class MainMenuScreen implements Screen {
 		heading.setFontScale(2);
 		Label subHeading = new Label("Destroy the Fortresses and Save the City", new Label.LabelStyle(game.coolFont, Color.WHITE));
 		TextButton playButton = new TextButton("Play", skin);
+		TextButton loadButton = new TextButton("Load", skin);
 		TextButton howToPlayButton = new TextButton("How to Play", skin);
 		TextButton quitButton = new TextButton("Quit", skin);
 
@@ -138,6 +139,15 @@ public class MainMenuScreen implements Screen {
 			public void clicked(InputEvent event, float x, float y) {
 				SFX.sfx_button_click.play();
 				game.setScreen(new DifficultySelectScreen(game));
+				dispose();
+			}
+		});
+
+		loadButton.addListener(new ClickListener(){
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				SFX.sfx_button_click.play();
+				game.setScreen(new LoadSelectScreen(game));
 				dispose();
 			}
 		});

@@ -44,6 +44,7 @@ import java.util.Random;
 // Class imports
 import com.entities.*;
 import com.Kroy;
+import com.Saves.GameData;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
 import com.sprites.PowerupSprite;
@@ -125,7 +126,7 @@ public class GameScreen implements Screen {
 	 *
 	 * @param game The game object.
 	 */
-	public GameScreen(final Kroy game, int difficulty) {
+	public GameScreen(final Kroy game, GameData gameData, int difficulty) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
 		this.difficulty=difficulty;
@@ -1310,35 +1311,5 @@ public class GameScreen implements Screen {
 	public Firetruck getActiveTruck() {return this.firestation.getActiveFireTruck();}
 
 
-	public void saveGame(GameScreen gameScreen, String path){
-		 //Json json = new Json();
-		 //write(json);
-		 //json.toJson(json, new FileHandle(path));
 
-		FileHandle file = Gdx.files.local(path);
-		Json json = new Json(JsonWriter.OutputType.json);
-		JsonWriter writer = new JsonWriter(new StringWriter());
-		json.setWriter(writer);
-		write(json);
-	}
-
-	
-	public void write(Json json){
-		/*json.writeValue("firestation", firestation);
-		json.writeValue("ETFortresses", ETFortresses);
-		json.writeValue("ETPatrols", ETPatrols);
-		json.writeValue("ETPatrolsTimer", ETPatrolsTimer);
-		json.writeValue("score", score);
-		json.writeValue("time", time);
-		json.writeValue("projectiles", projectiles);
-		json.writeValue("firestationTimer", firestationTimer);
-		json.writeValue("PowerUpTimer", PowerUpTimer); */
-		json.writeObjectStart();
-		json.writeFields(firestation);
-		json.writeObjectEnd();
-	}
-	
-	public void read(Json json, JsonValue jsonData) {
-		
-	}
 }

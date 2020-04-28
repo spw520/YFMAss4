@@ -121,7 +121,7 @@ public class StoryScreen implements Screen {
         stage.addActor(bcgstack);
 
         // creates game screen here to allow for less load time later
-        gameScreen = new GameScreen(game,difficulty);
+        gameScreen = new GameScreen(game, null, difficulty);
     }
 
     /**
