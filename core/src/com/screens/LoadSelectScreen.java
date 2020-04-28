@@ -20,6 +20,11 @@ import com.misc.SFX;
 
 import static com.misc.Constants.DEBUG_ENABLED;
 
+/** @author Alex Dawson
+ *  created this new screen so that the user can load existing saves
+ *  same as other menu screens for layout
+ *  the buttons wach have a file path that they pass a gamePath to the gamescreen
+ */
 
 public class LoadSelectScreen implements Screen {
     final Kroy game;
@@ -129,7 +134,8 @@ public class LoadSelectScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 SFX.sfx_button_click.play();
-                game.setScreen(new GameScreen(game, SaveManager.loadGame(Gdx.files.local("saves/save1.json")), 1));
+                game.setScreen(new GameScreen(game,"saves/save1.json", 1));
+                
                 dispose();
             }
         });
@@ -138,7 +144,7 @@ public class LoadSelectScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 SFX.sfx_button_click.play();
-                game.setScreen(new GameScreen(game, SaveManager.loadGame(Gdx.files.local("saves/save2.json")), 1));
+                game.setScreen(new GameScreen(game,"saves/save2.json" , 1));
                 dispose();
             }
         });
@@ -147,7 +153,7 @@ public class LoadSelectScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 SFX.sfx_button_click.play();
-                game.setScreen(new GameScreen(game, SaveManager.loadGame(Gdx.files.local("saves/save3.json")), 1));
+                game.setScreen(new GameScreen(game,"saves/save3.json", 1));
                 dispose();
             }
         });

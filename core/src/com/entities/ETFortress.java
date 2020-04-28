@@ -18,6 +18,11 @@ import com.sprites.SimpleSprite;
 import static com.misc.Constants.ETFORTRESS_HEIGHT;
 import static com.misc.Constants.ETFORTRESS_WIDTH;
 
+import com.Saves.ETFortressData;
+import com.Saves.GameData;
+import com.Saves.SaveManager;
+import com.Saves.TruckData;
+
 /**
  * The ET Fortress implementation, a static sprite in the game.
  * 
@@ -46,12 +51,17 @@ public class ETFortress extends SimpleSprite {
      * @param type              {@link FortressType} given to fortress
      * @param difficulty        The difficulty level of the game, used to determine the difficulty scale
      * @param gameScreen        GameScreen to send popup messages to
+     * 
+     * ADDED FOR ASSESMENT 4
+     * @param gamePath          gamePath is the path to the load file
      */
-    public ETFortress(Texture texture, Texture destroyedTexture, float scaleX, float scaleY, float xPos, float yPos, FortressType type, int difficulty, GameScreen gameScreen) {
+    public ETFortress(Texture texture, Texture destroyedTexture, float scaleX, float scaleY, float xPos, float yPos, FortressType type, int difficulty, GameScreen gameScreen, String gamePath) {
         super(texture);
         this.gameScreen = gameScreen;
         this.destroyed = destroyedTexture;
         this.flooded = false;
+
+        
 
         //the difficulty scale changes the base's range, health and healing by that factor
         if (difficulty==1) this.difScale=0.8f;
@@ -64,6 +74,14 @@ public class ETFortress extends SimpleSprite {
         this.setSize(ETFORTRESS_WIDTH * this.getScaleX(), ETFORTRESS_HEIGHT * this.getScaleY());
         this.getHealthBar().setMaxResource((int) (type.getHealth()*difScale));
         super.resetRotation(90);
+
+        //if there is a game data loaded from the path then load then
+        // use that data to give the towers health
+        GameData gameData = SaveManager.loadGame(gamePath);
+        if (gameData != null){
+            ETFortressData fortress = gameData.getFortress(type);
+            this.getHealthBar().setCurrentAmount((int)fortress.getHP());
+        }	
     }
 
     /**

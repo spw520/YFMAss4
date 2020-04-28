@@ -246,4 +246,8 @@ public class ResourceBar {
         this.currentResourceAmount = this.maxResourceAmount;
     }
 
+    public void setCurrentAmount(int value){
+        this.currentResourceAmount = value;
+    }
+
 }

@@ -31,6 +31,7 @@ public class Kroy extends Game {
 	private Label.LabelStyle font10;
 	private Skin skin;
 
+	
 	/**
 	 * Display the main menu screen upon game start.
 	 */
@@ -41,8 +42,11 @@ public class Kroy extends Game {
 		this.setFonts();
 		this.spriteBatch = new SpriteBatch();
 		this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
+
+	
 		// Instantly transition to the main menu screen when game starts
 		this.setScreen(new MainMenuScreen(this));
+
 	}
 
 	/**
@@ -114,4 +118,5 @@ public class Kroy extends Game {
 	public Skin getSkin() {
 		return this.skin;
 	}
+
 }

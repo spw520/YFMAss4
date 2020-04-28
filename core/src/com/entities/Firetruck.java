@@ -1,5 +1,9 @@
 package com.entities;
 
+import com.Saves.GameData;
+import com.Saves.SaveManager;
+import com.Saves.TruckData;
+
 // LibGDX imports
 
 import com.badlogic.gdx.Gdx;
@@ -78,7 +82,7 @@ public class Firetruck extends MovementSprite {
      * @param isBought       <code>true</code> if truck is bought to start with
      *                       <code>false</code> if truck needs to still be bought
      */
-    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought) {
+    public Firetruck(ArrayList<Texture> textureSlices, ArrayList<Texture> frames, TruckType type, TiledMapTileLayer collisionLayer, TiledMapTileLayer carparkLayer, Firestation fireStation, boolean isBought, String gamePath) {
         super(textureSlices.get(textureSlices.size() - 1), collisionLayer);
         this.waterFrames = frames;
         this.firetruckSlices = textureSlices;
@@ -95,6 +99,16 @@ public class Firetruck extends MovementSprite {
         this.isShield = 0;
         this.isSword = 0;
         this.isRange = 0;
+
+        // if there has been data loaded from a save then use that to give the values to the trucks
+        GameData gameData = SaveManager.loadGame(gamePath);
+			if (gameData != null){
+                TruckData truck = gameData.getTruck(type);
+                this.setPosition(truck.getX(), truck.getY());
+                this.getHealthBar().setCurrentAmount((int)Math.round(truck.getHealth()));
+                this.getWaterBar().setCurrentAmount((int)Math.round(truck.getWater()));
+                this.isBought = truck.getBought();
+			}	
     }
 
     /**

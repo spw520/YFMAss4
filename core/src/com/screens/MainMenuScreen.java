@@ -129,6 +129,8 @@ public class MainMenuScreen implements Screen {
 		buttonTable.row();
 		buttonTable.add(playButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
+		buttonTable.add(loadButton).padBottom(20).width(200).height(40);
+		buttonTable.row();
 		buttonTable.add(howToPlayButton).padBottom(20).width(200).height(40);
 		buttonTable.row();
 		buttonTable.add(quitButton).width(200).height(40);

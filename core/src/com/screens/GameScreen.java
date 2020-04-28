@@ -45,6 +45,7 @@ import java.util.Random;
 import com.entities.*;
 import com.Kroy;
 import com.Saves.GameData;
+import com.Saves.SaveManager;
 import com.rafaskoberg.gdx.typinglabel.TypingLabel;
 import com.sprites.MinigameSprite;
 import com.sprites.PowerupSprite;
@@ -120,16 +121,23 @@ public class GameScreen implements Screen {
 	//added for assessment 4: 1 is easy, 2 is medium, 3 is difficult
 	private int difficulty;
 
+	//added for assesment 4: a way of passing the path to the save
+	private String gamePath;
+
 	/**
 	 * The constructor for the main game screen. All main game logic is
 	 * contained.
 	 *
 	 * @param game The game object.
+	 * @param gamePath The path to the save file
+	 * @param difficulty The selected diffciulty level
 	 */
-	public GameScreen(final Kroy game, GameData gameData, int difficulty) {
+	public GameScreen(final Kroy game, String gamePath, int difficulty) {
 		// Assign the game to a property so it can be used when transitioning screens
 		this.game = game;
 		this.difficulty=difficulty;
+
+		this.gamePath = gamePath;
 
 		// ---- 1) Create new instance for all the objects needed for the game ---- //
 
@@ -267,13 +275,14 @@ public class GameScreen implements Screen {
 
 
 		// Initialise ETFortresses array and add ETFortresses to it
+		//ASSESSMENT 4 added game path
 		this.ETFortresses = new ArrayList<>();
-		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, difficulty, this));
-		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, difficulty, this));
-		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, difficulty, this));
-		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, difficulty, this));
-		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, difficulty, this));
-		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, difficulty, this));
+		this.ETFortresses.add(new ETFortress(cliffordsTowerTexture, cliffordsTowerWetTexture, 1, 1, 69 * TILE_DIMS, 51 * TILE_DIMS, FortressType.CLIFFORD, difficulty, this, this.gamePath));
+		this.ETFortresses.add(new ETFortress(yorkMinsterTexture, yorkMinsterWetTexture, 2, 3.25f, 68.25f * TILE_DIMS, 82.25f * TILE_DIMS, FortressType.MINSTER, difficulty, this,  this.gamePath));
+		this.ETFortresses.add(new ETFortress(railstationTexture, railstationWetTexture, 2, 2.5f, TILE_DIMS, 72.75f * TILE_DIMS, FortressType.RAIL, difficulty, this,  this.gamePath));
+		this.ETFortresses.add(new ETFortress(castle2Texture, castle2WetTexture, 2, 2, 10 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE2, difficulty, this,  this.gamePath));
+		this.ETFortresses.add(new ETFortress(castle1Texture, castle1WetTexture, 2, 2, 98 * TILE_DIMS, TILE_DIMS, FortressType.CASTLE1, difficulty, this,  this.gamePath));
+		this.ETFortresses.add(new ETFortress(mossyTexture, mossyWetTexture, 1.5f, 1.5f, 106 * TILE_DIMS, 101 * TILE_DIMS, FortressType.MOSSY, difficulty, this,  this.gamePath));
 
 		// Create array to collect entities that are no longer used
 		this.projectilesToRemove = new ArrayList<>();
@@ -320,6 +329,17 @@ public class GameScreen implements Screen {
 		}, 10,10);
 
 		if(difficulty!=1) finishTutorial();
+
+		//the score, time and difficulty are loaded from the data file
+		GameData gameData = SaveManager.loadGame(this.gamePath);
+
+			if (gameData != null){
+				//load score, timer, trucks, fortresses
+				this.score = gameData.getScore();
+				this.difficulty = gameData.getDifficulty();
+				this.time = gameData.getTime();
+				finishTutorial();
+			}	
 	}
 
 	/**
@@ -757,7 +777,7 @@ public class GameScreen implements Screen {
 		ArrayList<Texture> truckTextures = this.buildFiretuckTextures(type.getColourString());
 		Firetruck firetruck = new Firetruck(truckTextures, this.waterFrames, type,
 				(TiledMapTileLayer) map.getLayers().get("Collision"), (TiledMapTileLayer) map.getLayers().get("Carpark"),
-				this.firestation, isActive);
+				this.firestation, isActive, this.gamePath);
 		if (isActive) {
 			if (this.firestation.getActiveFireTruck() == null) {
 				this.firestation.setActiveFireTruck(firetruck);
@@ -1247,6 +1267,10 @@ public class GameScreen implements Screen {
 	 *
 	 * The shader will also change, and collisions will now
 	 * begin to occur, starting the game
+	 * 
+	 *  ASSESMENT 4
+	 *  add the if statemnt as this is called in some saves 
+	 *  but the location does not need to be set
 	 */
 	public void finishTutorial() {
 		if (isInTutorial) {
@@ -1254,10 +1278,12 @@ public class GameScreen implements Screen {
 			popupMessages.clear();
 			showPopupText("Good luck!", 1, 5);
 			fireStationTimer.start();
+			if (gamePath == ""){
 			firestation.getActiveFireTruck().getWaterBar().resetResourceAmount();
 			firestation.getActiveFireTruck().setRespawnLocation(0);
 			firestation.getActiveFireTruck().respawn();
 			firestation.getActiveFireTruck().setHose(false);
+			}
 			this.ETPatrols.clear();
 			this.powerUpList.clear();
 			this.camera.zoom = 1.3f;
@@ -1265,6 +1291,9 @@ public class GameScreen implements Screen {
 			popupMessages.addLast("{FADE=0;0.75;1}Pro Tip: Killing your enemies makes them less likely to kill you.");
 			popupMessages.addLast("{FADE=0;0.75;1}Pro Tip: Drive straight into a wall to perform a sick 180 flip.");
 			SFX.playGameMusic();
+			
+
+					
 		}
 	}
 
@@ -1310,6 +1339,11 @@ public class GameScreen implements Screen {
 
 	public Firetruck getActiveTruck() {return this.firestation.getActiveFireTruck();}
 
+	public int getDifficulty(){
+		return this.difficulty;
+	}
 
-
+	public ArrayList<ETFortress> getFortresses(){
+		return this.ETFortresses;
+	}
 }

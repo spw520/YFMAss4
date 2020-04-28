@@ -1,0 +1,64 @@
+{
+trucks: [
+	{
+		health: 170
+		water: 285
+		type: RED
+		isBought: true
+		x: 4099.422
+		y: 491.34283
+	}
+	{
+		health: 200
+		water: 500
+		type: BLUE
+		isBought: false
+		x: 3864
+		y: 1176
+	}
+	{
+		health: 240
+		water: 600
+		type: YELLOW
+		isBought: false
+		x: 3864
+		y: 1176
+	}
+	{
+		health: 245
+		water: 700
+		type: GREEN
+		isBought: false
+		x: 3864
+		y: 1176
+	}
+]
+fortresses: [
+	{
+		hp: 80
+		type: CLIFFORD
+	}
+	{
+		hp: 200
+		type: MINSTER
+	}
+	{
+		hp: 75
+		type: RAIL
+	}
+	{
+		hp: 60
+		type: CASTLE2
+	}
+	{
+		hp: 65
+		type: CASTLE1
+	}
+	{
+		hp: 100
+		type: MOSSY
+	}
+]
+time: 173
+difficulty: 2
+}

@@ -139,16 +139,28 @@ public class PauseScreen implements Screen {
             }
         });
 
+
+        // save game buttons call the saveGame function in the savemaanger with the appropriate path
         saveGameButton1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y){
                 SaveManager.saveGame(gameScreen, Gdx.files.local("saves/save1.json"));
-                //game.setScreen(new MenuScreen(game));
-                dispose();
             }
         });
 
-        
+        saveGameButton2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                SaveManager.saveGame(gameScreen, Gdx.files.local("saves/save2.json"));
+            }
+        });
+
+        saveGameButton3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                SaveManager.saveGame(gameScreen, Gdx.files.local("saves/save3.json"));
+            }
+        });
 
         quitButton.addListener(new ClickListener() {
             @Override
